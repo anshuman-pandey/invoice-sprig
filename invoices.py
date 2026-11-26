@@ -41,6 +41,10 @@ def validate(d):
  out.update(subtotal_cents=subtotal,tax_percent=str(tax),tax_cents=int((Decimal(subtotal)*tax/100).quantize(Decimal('1'),rounding=ROUND_HALF_UP)))
  out['total_cents']=out['subtotal_cents']+out['tax_cents'];return out
 
+def invoice_id(value):
+ if type(value)!=int or not 1<=value<=9223372036854775807:raise Invalid("Use a positive invoice ID within the supported integer range.")
+ return value
+
 class Ledger:
  def __init__(self,path):
   self.path=path
@@ -65,6 +69,7 @@ class Ledger:
    if request_key is not None:c.execute('INSERT INTO requests(key,body,invoice) VALUES(?,?,?)',(request_key,encoded,id))
    return id
  def status(self,id,status):
+  invoice_id(id)
   if status not in ['unpaid','paid','void']:raise Invalid('Status must be unpaid, paid or void.')
   with self.db() as c:
    row=c.execute('SELECT status FROM invoices WHERE id=?',(id,)).fetchone()
@@ -73,6 +78,7 @@ class Ledger:
    if row['status']==status:return
    c.execute('UPDATE invoices SET status=? WHERE id=?',(status,id));c.execute('INSERT INTO events(invoice,at,status) VALUES(?,?,?)',(id,datetime.datetime.now(datetime.timezone.utc).isoformat(),status))
  def get(self,id):
+  invoice_id(id)
   with self.db() as c:
    row=c.execute('SELECT * FROM invoices WHERE id=?',(id,)).fetchone()
    if not row:raise Invalid('Invoice not found.')
