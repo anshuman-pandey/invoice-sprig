@@ -6,7 +6,7 @@ A local, open-source alternative to Harvest's invoicing workflow: immutable numb
 
 ![Actual browser workspace, using synthetic example details](docs/workspace.png)
 
-**Self-hosted preview candidate.** The browser, six-language interface, multilingual PDF export and container recovery checks are implemented. Independent source publication and hosted HTTPS acceptance remain pending. This is not a public release, hosted service, tax-compliance system or payment processor.
+**Self-hosted preview candidate.** The browser, six-language interface, multilingual PDF export and container recovery checks are implemented. Source is public; hosted HTTPS acceptance remains pending. This is a self-hosted preview, not a hosted service, tax-compliance system or payment processor.
 
 ## Open the browser workspace
 
@@ -77,3 +77,7 @@ English, German, Spanish, Japanese, Simplified Chinese and Traditional Chinese a
 PDFs embed the bundled SIL-OFL Noto Sans SC font, covering Latin, kana and CJK invoice text. Glyph forms use the Simplified Chinese font design; locale-specific typography and complex-script shaping are not promised. Unsupported characters, including emoji, are rejected before browser issuance. See [font provenance and license](fonts/README.md).
 
 Fresh verification: 27 Python tests, English issuance/import browser workflows, five translated browser workflows, and catalog parity. Run `npm ci`, `npx playwright install chromium`, then `npm run test:browser` in the activated Python environment. The runner creates an isolated temporary database and stops its own test server. `CHROMIUM_PATH` can select an installed browser.
+
+## Source and deployment status
+
+[Independent public repository](https://github.com/anshuman-pandey/invoice-sprig). Source publication is verified. A public hosted deployment has not been configured or verified. Use the persistent Docker instructions for self-hosting; do not expose the development server.
