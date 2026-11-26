@@ -26,3 +26,15 @@ class Server(unittest.TestCase):
  def test_invalid_body(self):
   self.assertEqual(self.c.post('/api/preview',headers=self.h,json=[]).status_code,400)
   self.assertEqual(self.c.post('/api/preview',headers=self.h,data='x').status_code,415)
+
+ def test_oversized_invoice_ids_preserve_records_and_events(self):
+  ledger=Ledger(self.path);id=ledger.issue(self.d);before=ledger.get(id)
+  for bad in [0,2**63,10**100]:
+   base=f'/api/invoices/{bad}'
+   for response in [self.c.get(base,headers=self.h),self.c.get(base+'/pdf',headers=self.h),self.c.post(base+'/status',headers=self.h,json={'status':'paid'})]:
+    self.assertEqual(response.status_code,400);self.assertIn('invoice ID',response.json['error'])
+   self.assertEqual(ledger.get(id),before)
+  self.assertEqual(ledger.issue(self.d),id+1)
+ def test_in_range_missing_invoice_is_coherent_error(self):
+  response=self.c.get('/api/invoices/9223372036854775807',headers=self.h)
+  self.assertEqual(response.status_code,400);self.assertEqual(response.json['error'],'Invoice not found.')

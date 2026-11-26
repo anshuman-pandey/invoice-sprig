@@ -8,3 +8,12 @@ class CLI(unittest.TestCase):
    cmd=[sys.executable,'cli.py','--database',str(p/'invoice.db'),'issue',str(p/'draft.json')]
    result=subprocess.run(cmd,capture_output=True,text=True);self.assertEqual(result.returncode,1);self.assertIn('font does not support',result.stderr);self.assertEqual(Ledger(str(p/'invoice.db')).listing(),[])
    draft['customer']='日本語';(p/'draft.json').write_text(json.dumps(draft));result=subprocess.run(cmd,capture_output=True,text=True);self.assertEqual(result.returncode,0,result.stderr);self.assertEqual(result.stdout.strip(),'1')
+
+ def test_bad_invoice_ids_do_not_traceback_or_write_pdf(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   p=Path(tmp);db=p/'invoice.db';ledger=Ledger(str(db));id=ledger.issue(json.loads(Path('examples/draft.json').read_text()));before=ledger.get(id)
+   for invalid in ['0','-1',str(2**63),str(10**100)]:
+    for command in [['show',invalid],['status',invalid,'paid'],['pdf',invalid,str(p/'out.pdf')]]:
+     result=subprocess.run([sys.executable,'cli.py','--database',str(db),*command],capture_output=True,text=True)
+     self.assertEqual(result.returncode,1);self.assertIn('invoice ID',result.stderr);self.assertNotIn('Traceback',result.stderr)
+     self.assertFalse((p/'out.pdf').exists());self.assertEqual(ledger.get(id),before)
