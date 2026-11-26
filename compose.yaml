@@ -1,0 +1,14 @@
+services:
+  invoice-sprig:
+    build: .
+    environment:
+      SPRIG_OWNER_KEY: ${SPRIG_OWNER_KEY:?Run python3 scripts/setup.py}
+    ports: ["127.0.0.1:8126:8126"]
+    volumes: ["sprig-data:/data"]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+volumes:
+  sprig-data:

@@ -1,0 +1,12 @@
+{
+  "seller": "Sprig Studio, 12 Example Street",
+  "customer": "Sample Client, 45 Demo Avenue",
+  "currency": "USD",
+  "issued": "2026-11-17",
+  "due": "2026-12-17",
+  "tax_percent": "5",
+  "lines": [
+    {"description": "Design review and implementation", "quantity": "2.5", "unit_price": "80.00"},
+    {"description": "Documentation handoff", "quantity": "1", "unit_price": "60.00"}
+  ]
+}
